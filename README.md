@@ -1,2 +1,2 @@
-# DjangoTest
-回顾Django的基本用法
+# OnlineCourses
+##开发环境 Django1.9.8+xadmin+Pycharm+Python2.7
