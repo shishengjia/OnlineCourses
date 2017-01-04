@@ -23,7 +23,6 @@ class UserProfile(AbstractUser):
         return self.username
 
 
-# 邮箱验证码
 class EmailVerifyCode(models.Model):
     code = models.CharField(max_length=20, verbose_name=u"验证码")
     email = models.EmailField(max_length=50, verbose_name=u"邮箱")
@@ -38,7 +37,6 @@ class EmailVerifyCode(models.Model):
         verbose_name_plural = verbose_name
 
 
-# 轮播图
 class Banner(models.Model):
     title = models.CharField(max_length=100, verbose_name=u"标题")
     image = models.ImageField(upload_to="banner/%Y/%m", verbose_name=u"轮播图", max_length=100)

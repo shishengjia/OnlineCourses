@@ -5,7 +5,6 @@ from datetime import datetime
 from django.db import models
 
 
-# 课程
 class Course(models.Model):
     name = models.CharField(max_length=50, verbose_name=u"课程名")
     desc = models.CharField(max_length=300, verbose_name=u"课程描述")
@@ -24,7 +23,6 @@ class Course(models.Model):
         verbose_name_plural = verbose_name
 
 
-# 章节
 class Lesson(models.Model):
     course = models.ForeignKey(Course, verbose_name=u"课程")
     name = models.CharField(max_length=100, verbose_name=u"章节名称")
@@ -35,7 +33,6 @@ class Lesson(models.Model):
         verbose_name_plural = verbose_name
 
 
-# 视频
 class Video(models.Model):
     lesson = models.ForeignKey(Lesson, verbose_name=u"章节")
     name = models.CharField(max_length=100, verbose_name=u"视频名称")
@@ -46,7 +43,6 @@ class Video(models.Model):
         verbose_name_plural = verbose_name
 
 
-# 课程资源
 class CourseResource(models.Model):
     course = models.ForeignKey(Course, verbose_name=u"课程")
     name = models.CharField(max_length=100, verbose_name=u"名称")
