@@ -51,5 +51,5 @@ class Banner(models.Model):
     add_time = models.DateTimeField(default=datetime.now, verbose_name=u"添加时间")
 
     class Meta:
-        verbose_name = u"轮播图"
+        verbose_name = u"轮播图片"
         verbose_name_plural = verbose_name
