@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 import xadmin
-from users.models import EmailVerifyCode, Banner
+from .models import EmailVerifyCode, Banner
 
 _author_ = 'shishengjia'
 _date_ = '04/01/2017 20:21'
@@ -21,5 +21,6 @@ class BannerAdmin(object):
     list_filter = ['title', 'image', 'url', 'index', 'add_time']
 
 
+# 将model注册到xadmin的后台
 xadmin.site.register(EmailVerifyCode, EmailVerifyCodeAdmin)
 xadmin.site.register(Banner, BannerAdmin)
