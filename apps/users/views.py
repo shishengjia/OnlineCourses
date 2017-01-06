@@ -3,7 +3,9 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate,login
 from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
+from django.views.generic.base import View
 from .models import UserProfile
+from .forms import LoginForm
 # Create your views here.
 
 # 在这里重写authenticate方法，实现自定义的功能，比如可以邮箱或用户名登陆
@@ -20,16 +22,22 @@ class CustomBackend(ModelBackend):
             return None
 
 
-def user_login(request):
-    if request.method == "POST":
-        user_name = request.POST.get("username", "")
-        pass_word = request.POST.get("password", "")
-        # 这里的authenticate方法实际调用的是上面CustomBackend类里的authenticate方法
-        user = authenticate(username=user_name, password=pass_word)
-        if user is not None:
-            login(request, user)
-            return render(request, "index.html")
+class LoginView(View):
+    def get(self,request):
+         return render(request, "login.html", {})
+
+    def post(self,request):
+        login_form = LoginForm(request.POST)
+        # 验证数据格式是否合法
+        if login_form.is_valid():
+            user_name = request.POST.get("username", "")
+            pass_word = request.POST.get("password", "")
+            # 这里的authenticate方法实际调用的是上面CustomBackend类里的authenticate方法
+            user = authenticate(username=user_name, password=pass_word)
+            if user is not None:
+                login(request, user)
+                return render(request, "index.html")
+            else:
+                return render(request, "login.html", {"msg": "用户名或密码错误!"})
         else:
-            return render(request, "login.html", {"msg": "用户名或密码错误!"})
-    elif request.method == "GET":
-        return render(request, "login.html", {})
+            return render(request, "login.html", {"login_form": login_form})
