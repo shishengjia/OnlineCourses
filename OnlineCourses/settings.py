@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 """
 Django settings for OnlineCourses project.
 
@@ -15,6 +16,7 @@ import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# 添加搜索路径
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 sys.path.insert(0, os.path.join(BASE_DIR, 'extra_apps'))
 # Quick-start development settings - unsuitable for production
@@ -130,13 +132,15 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR,"static")
+    os.path.join(BASE_DIR, "static")
 ]
+# 配置发送邮件服务
 
 EMAIL_HOST = "smtp.sina.cn"
 EMAIL_PORT = 25
 EMAIL_HOST_USER = "13419516267@sina.cn"
-EMAIL_HOST_PASSWORD = "965769897"
+EMAIL_HOST_PASSWORD = "ssjusher123"
 EMAIL_USE_TLS = False
 EMAIL_FROM = "13419516267@sina.cn"
