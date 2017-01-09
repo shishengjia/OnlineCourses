@@ -9,7 +9,7 @@
 <section>
         <div class="wp">
             <ul  class="crumbs">
-                <li><a href="index.html">首页</a>></li>
+                <li><a href="{% url 'index' %}">首页</a>></li>
                 <li>课程机构</li>
             </ul>
         </div>
@@ -23,21 +23,21 @@
 		<div class="listoptions">
 			<ul>
 				<li>
+                    <!--按机构类别来选取-->
+                    <!--href里同时记录city_id，实现复合筛选-->
 					<h2>机构类别</h2>
 					<div class="cont">
                         <a href="?city={{ city_id }}"><span class="{% ifequal category '' %}active2{% endifequal %}">全部</span></a>
-
                             <a href="?ct=company&city={{ city_id }}"><span class="{% ifequal category 'company' %}active2{% endifequal %}">培训机构</span></a>
-
                             <a href="?ct=school&city={{ city_id }}"><span class="{% ifequal category 'school' %}active2{% endifequal %}">高校</span></a>
-
                             <a href="?ct=individual&city={{ city_id }}"><span class="{% ifequal category 'individual' %}active2{% endifequal %}">个人</span></a>
-
 					</div>
 				</li>
 				<li>
 					<h2>所在地区</h2>
 					<div class="more">更多</div>
+                    <!--按地区来搜索-->
+                    <!--href里同时记录category，实现复合筛选-->
 					<div class="cont">
                         <a href="?ct={{ category }}"><span class="{% ifequal city_id '' %}active2{% endifequal %}">全部</span></a>
                             {% for city in all_city %}
@@ -50,49 +50,37 @@
 		<div class="all">共<span class="key">{{ org_nums }}</span>家</div>
 		<div class="butler_list company list">
 		    <div class="layout">
-			<div class="head">
-				<ul class="tab_header">
-					<li class="{% ifequal sort '' %}active2{% endifequal %}"><a href="?ct={{ category }}&city={{ city_id }}">全部</a> </li>
-					<li class="{% ifequal sort 'student_nums' %}active2{% endifequal %}"><a href="?sort=student_nums&ct={{ category }}&city={{ city_id }}">学习人数 &#8595;</a></li>
-					<li class="{% ifequal sort 'hot' %}active2{% endifequal %}"><a href="?sort=hot&ct={{ category }}&city={{ city_id }}">热度 &#8595;</a></li>
-				</ul>
-			</div>
+			    <div class="head">
+                    <!--按热度和学习人数排名-->
+				    <ul class="tab_header">
+					    <li class="{% ifequal sort '' %}active2{% endifequal %}"><a href="?ct={{ category }}&city={{ city_id }}">全部</a> </li>
+					    <li class="{% ifequal sort 'student_nums' %}active2{% endifequal %}"><a href="?sort=student_nums&ct={{ category }}&city={{ city_id }}">学习人数 &#8595;</a></li>
+					    <li class="{% ifequal sort 'hot' %}active2{% endifequal %}"><a href="?sort=hot&ct={{ category }}&city={{ city_id }}">热度 &#8595;</a></li>
+				    </ul>
+		    	</div>
+                    <!--for循环遍历机构-->
                 {% for orgs in orgs.object_list %}
                      <dl class="des difdes">
                     <dt>
-                        <a href="org-detail-homepage.html">
+                        <a href="{% url 'org:org_home' orgs.id %}">
                             <img width="200" height="120" class="scrollLoading" data-url="{{ MEDIA_URL }}{{ orgs.image }}"/>
                         </a>
                     </dt>
                     <dd>
-                        <div class="clearfix">
-                             <a href="org-detail-homepage.html">
+                         <div class="clearfix">
+                             <a href="{% url 'org:org_home' orgs.id %}">
                                  <h1>{{ orgs.name }}</h1>
-                                 <div class="pic fl">
-
-                                         <img src="{% static 'images/authentication.png' %}"/>
-
-                                         <img src="{% static 'images/gold.png' %}"/>
-
-                                 </div>
                              </a>
                         </div>
                         <ul class="cont">
                             <li class="first"><p class="c7">学习人数：<span>{{ orgs.student_nums }}</span>热度：<span>{{ orgs.click_num }}</span></p></li>
                             <li class="c8" style="padding-left:18px;">{{ orgs.address }}</li>
-{#                            <li class="pic10" style="padding-left:18px;">经典课程：#}
-{##}
-{#                                    <a href="/diary/19/">c语言基础入门</a>#}
-{##}
-{#                                    <a href="/diary/16/">数据库基础</a>#}
-{##}
-{#                            </li>#}
                         </ul>
                     </dd>
                 </dl>
                 {% endfor %}
-
-		</div>
+		    </div>
+                <!--分页-->
                 <div class="pageturn">
                     <ul class="pagelist">
                          {% if orgs.has_previous %}
@@ -117,27 +105,28 @@
                 </div>
 		</div>
 	</div>
-	<div class="right companyright">
+        <!--我要咨询模块-->
+	    <div class="right companyright">
 			<div class="head">我要学习</div>
 			<form class="rightform" id="jsStayForm">
 				<div>
-                    <img src="../images/rightform1.png"/>
+                    <img src="{% static 'images/rightform1.png' %}"/>
                     <input type="text" name="name" id="companyName" placeholder="名字" maxlength="25" />
                 </div>
 				<div>
-                    <img src="../images/rightform2.png"/>
+                    <img src="{% static 'images/rightform2.png' %}"/>
                     <input type="text" name="mobile" id="companyMobile" placeholder="联系电话"/>
                 </div>
 				<div>
-                    <img src="../images/rightform3.png"/>
+                    <img src="{% static 'images/rightform3.png' %}"/>
                     <input type="text" name="course_name" id="companyAddress" placeholder="课程名" maxlength="50" />
                 </div>
                 <p class="error company-tips" id="jsCompanyTips"></p>
 				<input class="btn" type="text" id="jsStayBtn" value="立即咨询 >" />
-            <input type='hidden' name='csrfmiddlewaretoken' value='5I2SlleZJOMUX9QbwYLUIAOshdrdpRcy' />
+                {% csrf_token %}
             </form>
 		</div>
-
+        <!--排名模块-->
 		<div class="right companyrank layout">
 			<div class="head">授课机构排名</div>
 
@@ -152,6 +141,31 @@
                 {% endfor %}
 
 		</div>
-        </div>
+    </div>
 </section>
+{% endblock %}
+
+
+{% block custom_js2 %} <!--这个block里用户添加自己的js文件-->
+    <script>
+    $(function(){
+        $('#jsStayBtn').on('click', function(){
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url:"{% url 'org:add_ask' %}",
+                data:$('#jsStayForm').serialize(),
+                async: true,
+                success: function(data) {
+                    if(data.status == 'success'){
+                        $('#jsStayForm')[0].reset();
+                        alert("提交成功")
+                    }else if(data.status == 'fail'){
+                        $('#jsCompanyTips').html(data.msg)
+                    }
+                },
+            });
+        });
+      })
+    </script>
 {% endblock %}
