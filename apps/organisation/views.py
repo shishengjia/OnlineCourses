@@ -9,7 +9,10 @@ from .forms import UserAskForm
 # Create your views here.
 
 
-class OrgView(View):   # 完成分页以及筛选逻辑
+class OrgView(View):
+    """
+     分页以及筛选
+    """
     def get(self, request):
         all_org = CourseOrg.objects.all()
         hot_org = all_org.order_by("-click_num")[:3]  # 根据点击量筛选出所有机构中热度排名前三的机构
@@ -53,7 +56,10 @@ class OrgView(View):   # 完成分页以及筛选逻辑
          })
 
 
-class AddUserAskView(View):  # 用户咨询提交
+class AddUserAskView(View):
+    """
+    用户咨询提交
+    """
     def post(self, request):
         user_ask_from = UserAskForm(request.POST)
         if user_ask_from.is_valid():
@@ -65,11 +71,14 @@ class AddUserAskView(View):  # 用户咨询提交
 
 
 class OrgHomeView(View):
+    """
+    机构首页
+    """
     def get(self, request, org_id):
-        current_page = "home"
-        org = CourseOrg.objects.get(id=org_id)
-        all_courses = org.course_set.all()
-        all_teachers = org.teacher_set.all()[:1]
+        current_page = "home"   # 当前页标记
+        org = CourseOrg.objects.get(id=org_id)  # 根据url中的org_id查询机构
+        all_courses = org.course_set.all()  # 所有课程
+        all_teachers = org.teacher_set.all()[:1]  # 所有讲师
         return render(request, "org-detail-homepage.html", {
             "all_courses": all_courses,
             "all_teachers": all_teachers,
@@ -79,6 +88,9 @@ class OrgHomeView(View):
 
 
 class OrgCourseView(View):
+    """
+    机构课程
+    """
     def get(self, request, org_id):
         current_page = "course"
         org = CourseOrg.objects.get(id=org_id)
@@ -91,6 +103,9 @@ class OrgCourseView(View):
 
 
 class OrgDescView(View):
+    """
+    机构详情
+    """
     def get(self, request, org_id):
         current_page = "desc"
         org = CourseOrg.objects.get(id=org_id)
@@ -101,6 +116,9 @@ class OrgDescView(View):
 
 
 class OrgTeacherView(View):
+    """
+    机构讲师
+    """
     def get(self, request, org_id):
         current_page = "teacher"
         org = CourseOrg.objects.get(id=org_id)

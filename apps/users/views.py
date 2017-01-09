@@ -13,8 +13,10 @@ from utils.email_send import send_email
 
 
 class CustomBackend(ModelBackend):
-    # 在这里重写authenticate方法，实现自定义的校验功能，比如可以邮箱或用户名登陆
-    # 注意这里的username既可以代表用户名，也可以代表邮箱
+    """
+    在这里重写authenticate方法，实现自定义的校验功能，比如可以邮箱或用户名登陆
+    注意这里的username既可以代表用户名，也可以代表邮箱
+    """
     def authenticate(self, username=None, password=None, **kwargs):
         try:
             user = UserProfile.objects.get(Q(username=username) | Q(email=username))
@@ -24,7 +26,10 @@ class CustomBackend(ModelBackend):
             return None
 
 
-class ActiveUserView(View):  # ----激活用户----
+class ActiveUserView(View):
+    """
+    激活用户
+    """
     def get(self, request, active_code):
         # 从get请求中提取出url包含的active_code寻找对应存有该active_code的邮箱
         all_records = EmailVerifyCode.objects.filter(code=active_code)
@@ -40,7 +45,10 @@ class ActiveUserView(View):  # ----激活用户----
         return render(request, "login.html")
 
 
-class RegisterView(View):  # ----注册----
+class RegisterView(View):
+    """
+    注册
+    """
     def get(self, request):
         register_form = RegisterForm()
         return render(request, "register.html", {"register_form": register_form})
@@ -67,7 +75,10 @@ class RegisterView(View):  # ----注册----
             return render(request, "register.html", {"register_form": register_form})
 
 
-class LoginView(View):  # ----登陆----
+class LoginView(View):
+    """
+    登陆
+    """
     def get(self, request):
          return render(request, "login.html", {})
 
@@ -79,7 +90,7 @@ class LoginView(View):  # ----登陆----
             pass_word = request.POST.get("password", "")
             # 这里的authenticate方法实际调用的是上面CustomBackend类里的authenticate方法
             user = authenticate(username=user_name, password=pass_word)
-            if user is not None:  #
+            if user is not None:  # 用户名或密码是否正确
                 if user.is_active:  # 用户是否处于激活状态
                     login(request, user)
                     return HttpResponseRedirect(reverse("index"))
@@ -91,7 +102,10 @@ class LoginView(View):  # ----登陆----
             return render(request, "login.html", {"login_form": login_form})
 
 
-class ForgetPwdView(View):  # ----忘记密码----
+class ForgetPwdView(View):
+    """
+    忘记密码
+    """
     def get(self, request):
         # 需要将forget_form传到忘记密码页面，因为它带有验证码生成
         forget_form = ForgetForm()
@@ -114,7 +128,10 @@ ModifyPwdView负责处理用户在提交重置密码后的请求，不带有验�
 '''
 
 
-class ResetView(View):  # ----重置密码请求----
+class ResetView(View):
+    """
+    重置密码
+    """
     def get(self, request, active_code):
         # 从get请求中提取出url中包含的active_code寻找对应存有该active_code的邮箱
         all_records = EmailVerifyCode.objects.filter(code=active_code)
@@ -127,7 +144,10 @@ class ResetView(View):  # ----重置密码请求----
         return render(request, "login.html")
 
 
-class ModifyPwdView(View):  # ----修改密码----
+class ModifyPwdView(View):
+    """
+    修改密码
+    """
     def post(self, request):
         modify_form = ModifyPwdForm(request.POST)
         if modify_form.is_valid():
