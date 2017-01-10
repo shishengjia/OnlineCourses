@@ -1,12 +1,12 @@
 # -*- encoding: utf-8 -*-
 from django.shortcuts import render
 from django.views.generic import View
-from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
+from pure_pagination import Paginator, PageNotAnInteger
 from django.http import HttpResponse
 
 from .models import CourseOrg, CityDict
 from .forms import UserAskForm
-# Create your views here.
+from operation.models import UserFavorite
 
 
 class OrgView(View):
@@ -77,13 +77,24 @@ class OrgHomeView(View):
     def get(self, request, org_id):
         current_page = "home"   # 当前页标记
         org = CourseOrg.objects.get(id=org_id)  # 根据url中的org_id查询机构
-        all_courses = org.course_set.all()  # 所有课程
-        all_teachers = org.teacher_set.all()[:1]  # 所有讲师
+        all_courses = org.course_set.all()  # 根据course自己生成的’course_set‘字段获取所有课程(前提机构是课程的外键)
+        all_teachers = org.teacher_set.all()[:1]  # 同上
+        """
+        收藏的处理是单独于网页其他部分，采用的是ajax的方式
+        整个网页加载刷新的时候，需要判断一下当前机构是否已经被收藏
+        下面的机构课程，介绍，讲师也是同样
+        """
+        has_fav = False
+        if request.user.is_authenticated():  # 判断用户是否登陆
+            if UserFavorite.objects.filter(user=request.user, fav_id=int(org.id), fav_type=2):
+                has_fav = True  # 如果能查询到该记录，则标记为true
+
         return render(request, "org-detail-homepage.html", {
             "all_courses": all_courses,
             "all_teachers": all_teachers,
             "org": org,
-            "current_page": current_page
+            "current_page": current_page,
+            "has_fav": has_fav  # 返回收藏状态，交由html页面处理
         })
 
 
@@ -95,10 +106,17 @@ class OrgCourseView(View):
         current_page = "course"
         org = CourseOrg.objects.get(id=org_id)
         all_courses = org.course_set.all()
+
+        has_fav = False
+        if request.user.is_authenticated():
+            if UserFavorite.objects.filter(user=request.user, fav_id=int(org.id), fav_type=2):
+                has_fav = True
+
         return render(request, "org-detail-course.html", {
             "all_courses": all_courses,
             "org": org,
-            "current_page": current_page
+            "current_page": current_page,
+            "has_fav": has_fav
         })
 
 
@@ -109,9 +127,16 @@ class OrgDescView(View):
     def get(self, request, org_id):
         current_page = "desc"
         org = CourseOrg.objects.get(id=org_id)
+
+        has_fav = False
+        if request.user.is_authenticated():
+            if UserFavorite.objects.filter(user=request.user, fav_id=int(org.id), fav_type=2):
+                has_fav = True
+
         return render(request, "org-detail-desc.html", {
             "current_page": current_page,
-            "org": org
+            "org": org,
+            "has_fav": has_fav
         })
 
 
@@ -123,8 +148,52 @@ class OrgTeacherView(View):
         current_page = "teacher"
         org = CourseOrg.objects.get(id=org_id)
         all_teachers = org.teacher_set.all()
+
+        has_fav = False
+        if request.user.is_authenticated():
+            if UserFavorite.objects.filter(user=request.user, fav_id=int(org.id), fav_type=2):
+                has_fav = True
+
         return render(request, "org-detail-teachers.html", {
             "all_teachers": all_teachers,
             "org": org,
-            "current_page": current_page
+            "current_page": current_page,
+            "has_fav": has_fav
         })
+
+
+class AddFavoriteView(View):
+    """
+    添加收藏,取消收藏
+    """
+    def post(self, request):
+        fav_id = request.POST.get("fav_id", 0)
+        fav_type = request.POST.get("fav_type", 0)
+        # 判断用户是否登陆
+        if not request.user.is_authenticated():
+            return HttpResponse('{"status": "fail","msg": "用户未登陆"}',
+                                content_type="application/json")
+
+        # 查询该记录是否存在，也就是是否被收藏
+        exit_records = UserFavorite.objects.filter(user=request.user, fav_id=int(fav_id), fav_type=int(fav_type))
+        # 已经收藏，则这次操作为取消收藏
+        if exit_records:
+            exit_records.delete()
+            # 取消收藏，则按钮显示“收藏”
+            return HttpResponse('{"status": "fail","msg": "收藏"}',
+                                content_type="application/json")
+        else:
+            if int(fav_id) > 0 and int(fav_type) > 0:
+                user_fav = UserFavorite()
+                user_fav.user = request.user
+                user_fav.fav_id = int(fav_id)
+                user_fav.fav_type = int(fav_type)
+                user_fav.save()
+                return HttpResponse('{"status": "success","msg": "已收藏"}',
+                                    content_type="application/json")
+            else:
+                return HttpResponse('{"status": "fail","msg": "收藏出错"}',
+                                    content_type="application/json")
+
+
+
