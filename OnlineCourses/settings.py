@@ -91,7 +91,7 @@ WSGI_APPLICATION = 'OnlineCourses.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': "onlinecourse",
+        'NAME': "onlinecourses",
         'USER': "root",
         'PASSWORD': "ssjusher123",
         'HOST': "127.0.0.1"

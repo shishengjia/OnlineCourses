@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-from .models import Course, Lesson, Video, CourseResource
+from .models import Course, Lesson, Video, CourseResource, CourseType
 
 import xadmin
 
@@ -30,6 +30,12 @@ class VideoAdmin(object):
     list_filter = ['lesson__name', 'name', 'add_time']
 
 
+class CourseTypeAdmin(object):
+    list_display = ['name', 'add_time']
+    search_fields = ['name']
+    list_filter = ['name', 'add_time']
+
+
 class CourseResourceAdmin(object):
     list_display = ['course', 'name', 'add_time', 'download']
     search_fields = ['course', 'name', 'download']
@@ -40,3 +46,4 @@ xadmin.site.register(Course, CourseAdmin)
 xadmin.site.register(Lesson, LessonAdmin)
 xadmin.site.register(Video, VideoAdmin)
 xadmin.site.register(CourseResource, CourseResourceAdmin)
+xadmin.site.register(CourseType, CourseTypeAdmin)

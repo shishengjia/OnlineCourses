@@ -7,8 +7,22 @@ from django.db import models
 from organisation.models import CourseOrg
 
 
+# 城市
+class CourseType(models.Model):
+    name = models.CharField(max_length=20, verbose_name=u"课程类别")
+    add_time = models.DateTimeField(default=datetime.now)
+
+    class Meta:
+        verbose_name = u"课程类别"
+        verbose_name_plural = verbose_name
+
+    def __unicode__(self):
+        return self.name
+
+
 class Course(models.Model):
     org = models.ForeignKey(CourseOrg, verbose_name=u"课程所属机构", null=True, blank=True)
+    type = models.ForeignKey(CourseType, verbose_name=u"课程类别", null=True, blank=True)
     name = models.CharField(max_length=50, verbose_name=u"课程名")
     desc = models.CharField(max_length=300, verbose_name=u"课程描述")
     # TextField不限定长度
