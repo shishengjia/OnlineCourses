@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-from django.conf.urls import url,include
+from django.conf.urls import url
 
 from .views import OrgView, AddUserAskView, OrgHomeView, OrgCourseView, OrgDescView, OrgTeacherView, AddFavoriteView
 _author_ = 'shishengjia'

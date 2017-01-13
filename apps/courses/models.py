@@ -7,7 +7,6 @@ from django.db import models
 from organisation.models import CourseOrg
 
 
-# 城市
 class CourseType(models.Model):
     name = models.CharField(max_length=20, verbose_name=u"课程类别")
     add_time = models.DateTimeField(default=datetime.now)

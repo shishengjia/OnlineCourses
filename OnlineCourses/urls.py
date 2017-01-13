@@ -19,7 +19,6 @@ from django.views.generic import TemplateView
 from django.views.static import serve
 
 from users.views import LoginView, RegisterView, ActiveUserView, ForgetPwdView, ResetView, ModifyPwdView
-from organisation.views import OrgView
 from OnlineCourses.settings import MEDIA_ROOT
 import xadmin
 
@@ -38,6 +37,7 @@ urlpatterns = [
 
     # 遇到org开头的url，都会到organisation.urls继续完成url匹配（url的分发）
     url(r'^org/', include('organisation.urls', namespace="org")),
+    url(r'^course/', include('courses.urls', namespace="course")),
 
     #  配置上传文件的访问处理函数
     url(r'^media/(?P<path>.*)$', serve, {"document_root": MEDIA_ROOT}),

@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+<!--传递到这个页面的request会向上传递，所以可以在base.html里进行处理-->
+
+{% load staticfiles %} <!--模板里已经加载过，但是这里还是要加载一遍-->
+{% block title %}公开课-源学网 {% endblock %}
+
+{% block custom_bread %}
+<section>
+        <div class="wp">
+            <ul  class="crumbs">
+                <li><a href="{% url 'index' %}">首页</a>></li>
+                <li>公开课</li>
+            </ul>
+        </div>
+    </section>
+{% endblock %}
+<!--crumbs start-->
+
+{% block custom_content %}
+    <section>
+	<div class="wp">
+		<div class="list" style="margin-top:0;">
+			<div class="left layout">
+                <div class="listoptions">
+			<ul>
+				<li>
+					<h2>课程分类</h2>
+					<div class="more">更多</div>
+                    <!--按地区来搜索-->
+                    <!--href里同时记录category，实现复合筛选-->
+					<div class="cont">
+                        <a href="?"><span class="{% ifequal type_id '' %}active2{% endifequal %}">全部</span></a>
+                            {% for type in all_type %}
+                                 <a href="?type={{ type.id }}&ct={{ category }}"><span class="{% ifequal type_id type.id|stringformat:"i" %}active2{% endifequal %}">{{ type.name }}</span></a>
+                            {% endfor %}
+					</div>
+				</li>
+			</ul>
+		</div>
+				<div class="head">
+					<ul class="tab_header">
+					    <li class="{% ifequal sort '' %}active2{% endifequal %}"><a href="?type={{ type_id }}">全部</a> </li>
+					    <li class="{% ifequal sort 'student_nums' %}active2{% endifequal %}"><a href="?sort=student_nums&type={{ type_id }}">学习人数 &#8595;</a></li>
+					    <li class="{% ifequal sort 'hot' %}active2{% endifequal %}"><a href="?sort=hot&type={{ type_id }}">热度 &#8595;</a></li>
+				    </ul>
+				</div>
+                <div id="inWindow">
+                    <div class="tab_cont " id="content">
+					<div class="group_list">
+                            {% for course in courses.object_list %}
+                            <div class="box">
+                                <a href="course-detail.html">
+                                    <img width="280" height="350" class="scrollLoading" src="{{ MEDIA_URL }}{{ course.image }}"/>
+                                </a>
+                                <div class="des">
+                                    <a href="course-detail.html">
+                                        <h2>{{ course.name }}</h2>
+                                    </a>
+                                    <span class="fl">时长：<i class="key">{{ course.learning_time }}</i></span>
+                                    <span class="fr">学习人数：{{ course.student_nums }}&nbsp;&nbsp;</span>
+                                </div>
+                                <div class="bottom">
+                                    <a href="course-detail.html"><span class="fl">{{ course.org.name }}</span></a>
+                                    <span class="star fr  notlogin
+                                        " data-favid="15">
+                                        {{ course.fav_nums }}
+                                    </span>
+                                </div>
+                            </div>
+                            {% endfor %}
+					</div>
+                    <div class="pageturn">
+                        <ul class="pagelist">
+                            {% if courses.has_previous %}
+                             <li class="long"><a href="?{{ courses.previous_page_number.querystring }}">上一页</a></li>
+                            {% endif %}
+
+                             {% for page in courses.pages %}
+                                 {% if page %}
+                                    {% ifequal page courses.number %}
+                                        <li class="active"><a href="?{{ page.querystring }}">{{ page }}</a></li>
+                                    {% else %}
+                                         <li><a href="?{{ page.querystring }}" class="page">{{ page }}</a></li>
+                                     {% endifequal %}
+                                {% else %}
+                                    <li class="none"><a href="">...</a></li>
+                                {% endif %}
+                             {% endfor %}
+                            {% if courses.has_next %}
+                              <li class="long"><a href="?{{ courses.next_page_number.querystring }}">下一页</a></li>
+                             {% endif %}
+                        </ul>
+                    </div>
+				</div>
+                </div>
+			</div>
+			<div class="right layout">
+				<div class="head">热门课程推荐</div>
+				<div class="group_recommend">
+                    {% for course in hot_course %}
+                    <dl>
+						<dt>
+							<a target="_blank" href="">
+								<img width="240" height="220" class="scrollLoading" src="{{ MEDIA_URL }}{{ course.image }}"/>
+							</a>
+						</dt>
+					</dl>
+                    {% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+    </section>
+{% endblock %}
