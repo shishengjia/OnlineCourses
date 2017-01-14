@@ -1,10 +1,12 @@
 # -*- encoding: utf-8 -*-
 from django.shortcuts import render
 from django.views.generic import View
+from django.http import HttpResponse
 
 from pure_pagination import Paginator, PageNotAnInteger
 
 from .models import CourseType, Course
+from operation.models import UserFavorite
 # Create your views here.
 
 
@@ -50,3 +52,51 @@ class CourseListView(View):
             "hot_course": hot_course,
             "sort": sort
         })
+
+
+class CourseDetailView(View):
+    def get(self, request, course_id):
+
+        fav_id = request.POST.get("fav_id", 0)
+        fav_type = request.POST.get("fav_type", 0)
+
+        course = Course.objects.get(id=course_id)
+
+        # 判断课程和机构是否已被用户收藏
+        has_fav_course = False
+        has_fav_org = False
+        if request.user.is_authenticated():
+            if UserFavorite.objects.filter(user=request.user, fav_id=int(course.id), fav_type=1):
+                has_fav_course = True
+            if UserFavorite.objects.filter(user=request.user, fav_id=int(course.org.id), fav_type=2):
+                has_fav_org = True
+
+
+        # 课程点击数加1
+        course.click_nums += 1
+        course.save()
+
+        type_id = course.type_id
+
+        recommend_course = Course.objects.filter(type_id=type_id)[1:2]
+
+        # 课程章节数
+        lesson_num = course.lesson_set.all().count()
+
+        # 课程所属机构教师数量
+        teacher_num = course.org.teacher_set.all().count()
+
+        # 课程所属机构课程数
+        course_num = course.org.course_set.all().count()
+
+        return render(request, "course-detail.html",{
+            "course": course,
+            "lesson_num": lesson_num,
+            "teacher_num": teacher_num,
+            "course_num": course_num,
+            "recommend_course": recommend_course,
+            "has_fav_course": has_fav_course,
+            "has_fav_org": has_fav_org
+        })
+
+
