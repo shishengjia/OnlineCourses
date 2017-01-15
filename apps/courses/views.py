@@ -6,7 +6,8 @@ from django.http import HttpResponse
 from pure_pagination import Paginator, PageNotAnInteger
 
 from .models import CourseType, Course
-from operation.models import UserFavorite, CourseComment
+from operation.models import UserFavorite, CourseComment, UserCourse
+from utils.LoginJudge import LoginRequiredMixin
 # Create your views here.
 
 
@@ -100,19 +101,38 @@ class CourseDetailView(View):
         })
 
 
-class CourseInfoView(View):
+class CourseInfoView(LoginRequiredMixin, View):
     """
-    课程章节信息
+    课程章节信息,继承LoginRequiredMixin类，完成是否登陆的验证，没有登陆跳转到登陆界面
     """
     def get(self, request, course_id):
 
         course = Course.objects.get(id=int(course_id))
+
+        # 判断该登陆用户是否已经学过这门课，没学过的就添加到记录中
+        course_learned = UserCourse.objects.filter(user=request.user, course=course)
+        if not course_learned:
+            user_course = UserCourse(user=request.user, course=course)
+            user_course.save()
+
+        # 从UserCourse表取出所有课程为当前课程的记录
+        users_course = UserCourse.objects.filter(course=course)
+        # 从取出的记录中取出记录对应的用户ID(学过该门课的用户的ID)
+        users_id = [users_course.user.id for users_course in users_course]
+        # 根据ID从UserCourse中找出对应用户学过的所有其他课程的记录（学过该门课的用户学过的其他课程的记录）
+        all_users_courses = UserCourse.objects.filter(user_id__in=users_id)
+        # 从记录中遍历出相应课程ID（学过该门课的用户学过的其他课程的ID）
+        courses_ids = [all_users_course.course.id for all_users_course in all_users_courses]
+        # 根据ID找出对应的课程对象，并按热度排名，选出前3名
+        relate_courses = Course.objects.filter(id__in=courses_ids).order_by("-click_nums")[:3]
+
         return render(request, "course-video.html", {
-            "course": course
+            "course": course,
+            "relate_courses": relate_courses
         })
 
 
-class CourseCommentView(View):
+class CourseCommentView(LoginRequiredMixin, View):
     def get(self, request, course_id):
 
         course = Course.objects.get(id=int(course_id))
