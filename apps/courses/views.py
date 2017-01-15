@@ -100,3 +100,15 @@ class CourseDetailView(View):
         })
 
 
+class CourseInfoView(View):
+    """
+    课程章节信息
+    """
+    def get(self, request, course_id):
+
+        course =  Course.objects.get(id=int(course_id))
+        return render(request, "course-video.html", {
+            "course": course
+        })
+
+

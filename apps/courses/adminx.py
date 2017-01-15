@@ -25,9 +25,9 @@ class LessonAdmin(object):
 
 
 class VideoAdmin(object):
-    list_display = ['lesson', 'name', 'add_time']
-    search_fields = ['lesson', 'name']
-    list_filter = ['lesson__name', 'name', 'add_time']
+    list_display = ['lesson', 'url', 'learning_time', 'name', 'add_time']
+    search_fields = ['lesson', 'url', 'learning_time',  'name']
+    list_filter = ['lesson__name', 'url', 'learning_time',  'name', 'add_time']
 
 
 class CourseTypeAdmin(object):

@@ -4,7 +4,7 @@ from datetime import datetime
 
 from django.db import models
 
-from organisation.models import CourseOrg
+from organisation.models import CourseOrg, Teacher
 
 
 class CourseType(models.Model):
@@ -21,6 +21,7 @@ class CourseType(models.Model):
 
 class Course(models.Model):
     org = models.ForeignKey(CourseOrg, verbose_name=u"课程所属机构", null=True, blank=True)
+    teacher = models.ForeignKey(Teacher, verbose_name=u"课程讲师",  null=True, blank=True)
     type = models.ForeignKey(CourseType, verbose_name=u"课程类别", null=True, blank=True)
     name = models.CharField(max_length=50, verbose_name=u"课程名")
     desc = models.CharField(max_length=300, verbose_name=u"课程描述")
@@ -33,6 +34,7 @@ class Course(models.Model):
     fav_nums = models.IntegerField(default=0, verbose_name=u"收藏人数")
     image = models.ImageField(upload_to="course/%Y/%m", verbose_name=u"课程封面")
     click_nums = models.IntegerField(default=0, verbose_name=u"点击量")
+    notice = models.CharField(max_length=200, verbose_name=u"课前需知", default="")
     add_time = models.DateTimeField(default=datetime.now, verbose_name=u"添加时间")
 
     class Meta:
@@ -41,6 +43,13 @@ class Course(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def get_course_lesson(self):
+        # 获取课程章节
+        return self.lesson_set.all()
+
+    def get_course_resources(self):
+        return self.courseresource_set.all()
 
 
 class Lesson(models.Model):
@@ -55,15 +64,24 @@ class Lesson(models.Model):
     def __unicode__(self):
         return self.name
 
+    def get_lesson_videos(self):
+        # 获取章节下所有视频
+        return self.video_set.all()
+
 
 class Video(models.Model):
     lesson = models.ForeignKey(Lesson, verbose_name=u"章节")
     name = models.CharField(max_length=100, verbose_name=u"视频名称")
+    learning_time = models.IntegerField(default=0, verbose_name=u"学习时长（分钟）")
+    url = models.CharField(max_length=100, default="", verbose_name=u"视频地址")
     add_time = models.DateTimeField(default=datetime.now, verbose_name=u"添加时间")
 
     class Meta:
         verbose_name = u"视频"
         verbose_name_plural = verbose_name
+
+    def __unicode__(self):
+        return self.name
 
 
 class CourseResource(models.Model):
