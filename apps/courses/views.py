@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from pure_pagination import Paginator, PageNotAnInteger
 
 from .models import CourseType, Course
-from operation.models import UserFavorite
+from operation.models import UserFavorite, CourseComment
 # Create your views here.
 
 
@@ -106,9 +106,43 @@ class CourseInfoView(View):
     """
     def get(self, request, course_id):
 
-        course =  Course.objects.get(id=int(course_id))
+        course = Course.objects.get(id=int(course_id))
         return render(request, "course-video.html", {
             "course": course
         })
+
+
+class CourseCommentView(View):
+    def get(self, request, course_id):
+
+        course = Course.objects.get(id=int(course_id))
+        comments = CourseComment.objects.filter(course_id=course_id).order_by("-add_time")
+        return render(request, "course-comment.html", {
+            "course": course,
+            "comments": comments
+        })
+
+
+class AddCommentView(View):
+    def post(self,request):
+
+        # 判断用户是否登陆
+        if not request.user.is_authenticated():
+            return HttpResponse('{"status": "fail","msg": "用户未登陆"}',
+                                content_type="application/json")
+
+        course_id = request.POST.get("course_id", 0)
+        comment = request.POST.get("comment", "")
+        if int(course_id) > 0 and comment:
+            course_comment = CourseComment()
+            course_comment.user = request.user
+            course_comment.course = Course.objects.get(id=int(course_id))
+            course_comment.comment = comment
+            course_comment.save()
+            return HttpResponse('{"status": "success","msg": "添加成功"}',
+                                content_type="application/json")
+        else:
+            return HttpResponse('{"status": "fail","msg": "添加失败"}',
+                                content_type="application/json")
 
 
