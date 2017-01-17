@@ -37,6 +37,7 @@ urlpatterns = [
 
     # 遇到org开头的url，都会到organisation.urls继续完成url匹配（url的分发）
     url(r'^org/', include('organisation.urls', namespace="org")),
+    # 遇到course开头的url，都会到courses.urls继续完成url匹配（url的分发）
     url(r'^course/', include('courses.urls', namespace="course")),
 
     #  配置上传文件的访问处理函数

@@ -5,13 +5,16 @@ from django.http import HttpResponse
 
 from pure_pagination import Paginator, PageNotAnInteger
 
-from .models import CourseType, Course
+from .models import CourseType, Course, Video
 from operation.models import UserFavorite, CourseComment, UserCourse
 from utils.LoginJudge import LoginRequiredMixin
 # Create your views here.
 
 
 class CourseListView(View):
+    """
+    课程列表
+    """
     def get(self, request):
         all_course = Course.objects.all()
         hot_course = all_course.order_by("-click_nums")[:3]  # 根据点击量筛选出所有机构中热度排名前三的机构
@@ -28,7 +31,7 @@ class CourseListView(View):
         if org_id:
             all_course = all_course.filter(org_id=org_id)
 
-        # 根据分类（学习人数，热度）来筛选
+        # 根据分类（学习人数，热度）来排序
         sort = request.GET.get("sort", "")
         if sort:
             if sort == "student_nums":
@@ -46,16 +49,19 @@ class CourseListView(View):
         courses = p.page(page)
 
         return render(request, "course-list.html", {
-            "all_type": all_type,
-            "courses": courses,
-            "type_id": type_id,
-            "org_id": org_id,
-            "hot_course": hot_course,
-            "sort": sort
+            "all_type": all_type,  # 所有课程类别
+            "courses": courses,  # 课程
+            "type_id": type_id,  # 课程类别ID
+            "org_id": org_id,    # 课程机构ID
+            "hot_course": hot_course, # 热门课程
+            "sort": sort  # 排序
         })
 
 
 class CourseDetailView(View):
+    """
+    课程详情
+    """
     def get(self, request, course_id):
 
         fav_id = request.POST.get("fav_id", 0)
@@ -72,13 +78,12 @@ class CourseDetailView(View):
             if UserFavorite.objects.filter(user=request.user, fav_id=int(course.org.id), fav_type=2):
                 has_fav_org = True
 
-
         # 课程点击数加1
         course.click_nums += 1
         course.save()
 
         type_id = course.type_id
-
+        # 根据课程类别ID推荐相关课程
         recommend_course = Course.objects.filter(type_id=type_id)[1:2]
 
         # 课程章节数
@@ -91,11 +96,11 @@ class CourseDetailView(View):
         course_num = course.org.course_set.all().count()
 
         return render(request, "course-detail.html",{
-            "course": course,
+            "course": course,   # 当前课程对象
             "lesson_num": lesson_num,
             "teacher_num": teacher_num,
             "course_num": course_num,
-            "recommend_course": recommend_course,
+            "recommend_course": recommend_course,  # 推荐课程
             "has_fav_course": has_fav_course,
             "has_fav_org": has_fav_org
         })
@@ -108,7 +113,8 @@ class CourseInfoView(LoginRequiredMixin, View):
     def get(self, request, course_id):
 
         course = Course.objects.get(id=int(course_id))
-
+        course.student_nums += 1
+        course.save()
         # 判断该登陆用户是否已经学过这门课，没学过的就添加到记录中
         course_learned = UserCourse.objects.filter(user=request.user, course=course)
         if not course_learned:
@@ -133,6 +139,9 @@ class CourseInfoView(LoginRequiredMixin, View):
 
 
 class CourseCommentView(LoginRequiredMixin, View):
+    """
+    课程评论，继承LoginRequiredMixin类，完成是否登陆的验证，没有登陆跳转到登陆界面
+    """
     def get(self, request, course_id):
 
         course = Course.objects.get(id=int(course_id))
@@ -144,7 +153,10 @@ class CourseCommentView(LoginRequiredMixin, View):
 
 
 class AddCommentView(View):
-    def post(self,request):
+    """
+    处理添加评论的请求
+    """
+    def post(self, request):
 
         # 判断用户是否登陆
         if not request.user.is_authenticated():
@@ -164,5 +176,35 @@ class AddCommentView(View):
         else:
             return HttpResponse('{"status": "fail","msg": "添加失败"}',
                                 content_type="application/json")
+
+
+class CourseVideoView(View):
+    def get(self, request, video_id):
+
+        video = Video.objects.get(id=int(video_id))
+
+        course = video.lesson.course
+        # 判断该登陆用户是否已经学过这门课，没学过的就添加到记录中
+        course_learned = UserCourse.objects.filter(user=request.user, course=course)
+        if not course_learned:
+            user_course = UserCourse(user=request.user, course=course)
+            user_course.save()
+
+        # 从UserCourse表取出所有课程为当前课程的记录
+        users_course = UserCourse.objects.filter(course=course)
+        # 从取出的记录中取出记录对应的用户ID(学过该门课的用户的ID)
+        users_id = [users_course.user.id for users_course in users_course]
+        # 根据ID从UserCourse中找出对应用户学过的所有其他课程的记录（学过该门课的用户学过的其他课程的记录）
+        all_users_courses = UserCourse.objects.filter(user_id__in=users_id)
+        # 从记录中遍历出相应课程ID（学过该门课的用户学过的其他课程的ID）
+        courses_ids = [all_users_course.course.id for all_users_course in all_users_courses]
+        # 根据ID找出对应的课程对象，并按热度排名，选出前3名
+        relate_courses = Course.objects.filter(id__in=courses_ids).order_by("-click_nums")[:3]
+
+        return render(request, "course-play.html", {
+            "course": course,
+            "relate_courses": relate_courses,
+            "video": video
+        })
 
 
