@@ -2,6 +2,7 @@
 from django.shortcuts import render
 from django.views.generic import View
 from django.http import HttpResponse
+from django.db.models import Q
 
 from pure_pagination import Paginator, PageNotAnInteger
 
@@ -19,6 +20,11 @@ class CourseListView(View):
         all_course = Course.objects.all()
         hot_course = all_course.order_by("-click_nums")[:3]  # 根据点击量筛选出所有机构中热度排名前三的机构
         all_type = CourseType.objects.all()
+
+        # 全局搜索
+        key_word = request.GET.get("key_word", "")
+        if key_word:
+            all_course = all_course.filter(Q(name__icontains=key_word) | Q(desc__icontains=key_word))
 
         # 注意，虽然在model里定义的是city字段，但是在数据库中实际上是city_id(这是对外键的一种处理)
         # 根据城市筛选，默认为空，表示选取所有机构
@@ -54,7 +60,7 @@ class CourseListView(View):
             "type_id": type_id,  # 课程类别ID
             "org_id": org_id,    # 课程机构ID
             "hot_course": hot_course, # 热门课程
-            "sort": sort  # 排序
+            "sort": sort,  # 排序
         })
 
 

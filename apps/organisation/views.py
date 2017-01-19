@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 from django.shortcuts import render
 from django.views.generic import View
+from django.db.models import Q
 from pure_pagination import Paginator, PageNotAnInteger
 from django.http import HttpResponse
 
@@ -17,6 +18,11 @@ class OrgView(View):
         all_org = CourseOrg.objects.all()
         hot_org = all_org.order_by("-click_num")[:3]  # 根据点击量筛选出所有机构中热度排名前三的机构
         all_city = CityDict.objects.all()  # 获取城市列表
+
+        # 全局搜索
+        key_word = request.GET.get("key_word", "")
+        if key_word:
+            all_org = all_org.filter(Q(name__icontains=key_word))
 
         # 注意，虽然在model里定义的是city字段，但是在数据库中实际上是city_id(这是对外键的一种处理)
         # 根据城市筛选，默认为空，表示选取所有机构
@@ -52,7 +58,7 @@ class OrgView(View):
             "city_id": city_id,    # 将city_id传回页面，方便页面知道中city列表知道哪一个被选中了
             "category": category,   # 同上
             "hot_org": hot_org,     # 返回热度前三的机构
-            "sort": sort            # 同city_id
+            "sort": sort,            # 同city_id
          })
 
 
@@ -208,6 +214,11 @@ class TeacherListView(View):
 
         teacher_num = all_teachers.count()
 
+        # 全局搜索
+        key_word = request.GET.get("key_word", "")
+        if key_word:
+            all_teachers = all_teachers.filter(Q(name__icontains=key_word))
+
         # 按照热度来排序
         sort = request.GET.get("sort", "")
         if sort:
@@ -226,7 +237,7 @@ class TeacherListView(View):
             "teachers": teachers,
             "hot_teachers": hot_teachers,
             "teacher_num": teacher_num,
-            "sort": sort
+            "sort": sort,
         })
 
 

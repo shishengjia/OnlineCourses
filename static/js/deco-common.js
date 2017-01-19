@@ -61,17 +61,17 @@ function getCookie(name) {
 //顶部搜索栏搜索方法
 function search_click(){
     var type = $('#jsSelectOption').attr('data-value'),
-        keywords = $('#search_keywords').val(),
+        key_word = $('#search_keywords').val(),
         request_url = '';
-    if(keywords == ""){
+    if(key_word == ""){
         return
     }
     if(type == "course"){
-        request_url = "/course/list?keywords="+keywords
+        request_url = "/course/list?tag=course&key_word="+key_word
     }else if(type == "teacher"){
-        request_url = "/org/teacher/list?keywords="+keywords
+        request_url = "/org/teacher/list?tag=teacher&key_word="+key_word
     }else if(type == "org"){
-        request_url = "/org/list?keywords="+keywords
+        request_url = "/org/list?tag=org&key_word="+key_word
     }
     window.location.href = request_url
 }
