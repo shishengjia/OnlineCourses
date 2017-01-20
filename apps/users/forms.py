@@ -1,6 +1,8 @@
 # -*- encoding: utf-8 -*-
 from django import forms
 from captcha.fields import CaptchaField
+
+from .models import UserProfile
 _author_ = 'shishengjia'
 _date_ = '06/01/2017 13:57'
 
@@ -42,3 +44,11 @@ class ModifyPwdForm(forms.Form):
     """
     password = forms.CharField(required=True, min_length=6)
     password_again = forms.CharField(required=True, min_length=6)
+
+
+class ModifyUserImageForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['image']  # 需要验证的字段
+
+

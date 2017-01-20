@@ -86,21 +86,21 @@ $(function(){
             cache: false,
             type: "POST",
             dataType:'json',
-            url:"/users/update/pwd/",
+            url:"/user/update_pwd/",
             data:$('#jsResetPwdForm').serialize(),
             async: true,
             success: function(data) {
-                if(data.password1){
-                    Dml.fun.showValidateError($("#pwd"), data.password1);
-                }else if(data.password2){
-                    Dml.fun.showValidateError($("#repwd"), data.password2);
+                if(data.password){  //表单验证不通过
+                    Dml.fun.showValidateError($("#pwd"), data.password);
+                }else if(data.password_again){ //表单验证不通过
+                    Dml.fun.showValidateError($("#repwd"), data.password_again);
                 }else if(data.status == "success"){
                     Dml.fun.showTipsDialog({
                         title:'提交成功',
                         h2:'修改密码成功，请重新登录!',
                     });
                     Dml.fun.winReload();
-                }else if(data.msg){
+                }else if(data.msg){  //两次密码不一致
                     Dml.fun.showValidateError($("#pwd"), data.msg);
                     Dml.fun.showValidateError($("#repwd"), data.msg);
                 }

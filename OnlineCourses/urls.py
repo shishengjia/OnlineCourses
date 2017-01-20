@@ -40,6 +40,8 @@ urlpatterns = [
     # 遇到course开头的url，都会到courses.urls继续完成url匹配（url的分发）
     url(r'^course/', include('courses.urls', namespace="course")),
 
+    url(r'^user/', include('users.urls', namespace="user")),
+
     #  配置上传文件的访问处理函数
     url(r'^media/(?P<path>.*)$', serve, {"document_root": MEDIA_ROOT}),
 
