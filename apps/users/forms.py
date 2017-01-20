@@ -52,3 +52,9 @@ class ModifyUserImageForm(forms.ModelForm):
         fields = ['image']  # 需要验证的字段
 
 
+class UserInfoForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['nickName', 'birthday', 'gender', 'address', 'mobile']
+
+

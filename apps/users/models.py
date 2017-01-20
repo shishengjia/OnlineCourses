@@ -27,8 +27,8 @@ class EmailVerifyCode(models.Model):
     code = models.CharField(max_length=20, verbose_name=u"验证码")
     email = models.EmailField(max_length=50, verbose_name=u"邮箱")
     # 记录是何种类型
-    send_type = models.CharField(choices=(("register", u"注册"), ("forget", u"找回密码")), max_length=10,
-                                 verbose_name=u"验证码类型")
+    send_type = models.CharField(choices=(("register", u"注册"), ("forget", u"找回密码"),
+                                          ("update_email", u"更新邮箱")), max_length=15, verbose_name=u"验证码类型")
     # datetime.now()返回model编译时的时间
     # datetime.now 返回model实例化时的时间
     send_time = models.DateTimeField(default=datetime.now, verbose_name=u"发送时间")

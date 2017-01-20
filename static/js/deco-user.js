@@ -12,7 +12,7 @@ function sendCodeChangeEmail($btn){
         cache: false,
         type: "get",
         dataType:'json',
-        url:"/users/sendemail_code/",
+        url:"/user/send_verify_code/",
         data:$('#jsChangeEmailForm').serialize(),
         async: true,
         beforeSend:function(XMLHttpRequest){
@@ -20,8 +20,8 @@ function sendCodeChangeEmail($btn){
             $btn.attr('disabled',true);
         },
         success: function(data){
-            if(data.email){
-                Dml.fun.showValidateError($('#jsChangeEmail'), data.email);
+            if(data.msg){ //邮箱为当前邮箱
+                Dml.fun.showValidateError($('#jsChangeEmail'), data.msg);
             }else if(data.status == 'success'){
                 Dml.fun.showErrorTips($('#jsChangeEmailTips'), "邮箱验证码已发送");
             }else if(data.status == 'failure'){
@@ -36,7 +36,7 @@ function sendCodeChangeEmail($btn){
     });
 
 }
-//个人资料邮箱修改
+//个人资料邮箱修改提交
 function changeEmailSubmit($btn){
 var verify = verifyDialogSubmit(
         [
@@ -50,7 +50,7 @@ var verify = verifyDialogSubmit(
         cache: false,
         type: 'post',
         dataType:'json',
-        url:"/users/update_email/ ",
+        url:"/user/update_email/ ",
         data:$('#jsChangeEmailForm').serialize(),
         async: true,
         beforeSend:function(XMLHttpRequest){
@@ -59,8 +59,8 @@ var verify = verifyDialogSubmit(
             $("#jsChangeEmailTips").html("验证中...").show(500);
         },
         success: function(data) {
-            if(data.email){
-                Dml.fun.showValidateError($('#jsChangeEmail'), data.email);
+            if(data.msg){
+                Dml.fun.showValidateError($('#jsChangeEmail'), data.msg);
             }else if(data.status == "success"){
                 Dml.fun.showErrorTips($('#jsChangePhoneTips'), "邮箱信息更新成功");
                 setTimeout(function(){location.reload();},1000);
@@ -160,7 +160,7 @@ $(function(){
             cache: false,
             type: 'post',
             dataType:'json',
-            url:"/users/info/",
+            url:"/user/info/",
             data:$jsEditUserForm.serialize(),
             async: true,
             beforeSend:function(XMLHttpRequest){

@@ -1,12 +1,19 @@
 # -*- encoding: utf-8 -*-
 from django.conf.urls import url
 
-from .views import UserInfoView, ModifyUserImageView, UpdatePwdView
+from .views import UserInfoView, ModifyUserImageView, UpdatePwdView, SendVerifyCodeView, UpdateEmailView
 _author_ = 'shishengjia'
 _date_ = '19/01/2017 20:38'
 
 urlpatterns = [
-        url(r'^info/$', UserInfoView.as_view(), name="user_info"),
-        url(r'^modify_image/$', ModifyUserImageView.as_view(), name="user_modify_image"),
-        url(r'^update_pwd/$', UpdatePwdView.as_view(), name="user_update_pwd"),
+    # 用户信息
+    url(r'^info/$', UserInfoView.as_view(), name="user_info"),
+    # 修改用户头像
+    url(r'^modify_image/$', ModifyUserImageView.as_view(), name="user_modify_image"),
+    # 更新密码
+    url(r'^update_pwd/$', UpdatePwdView.as_view(), name="user_update_pwd"),
+    # 修改邮箱时的验证码
+    url(r'^send_verify_code/$', SendVerifyCodeView.as_view(), name="user_send_verify_code"),
+    # 修改邮箱
+    url(r'^update_email/$', UpdateEmailView.as_view(), name="user_update_email"),
 ]

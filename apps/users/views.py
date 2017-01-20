@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.views.generic.base import View
 from .models import UserProfile, EmailVerifyCode
-from .forms import LoginForm, RegisterForm, ForgetForm, ModifyPwdForm, ModifyUserImageForm
+from .forms import LoginForm, RegisterForm, ForgetForm, ModifyPwdForm, ModifyUserImageForm, UserInfoForm
 from utils.email_send import send_email
 from utils.LoginJudge import LoginRequiredMixin
 import json
@@ -71,7 +71,7 @@ class RegisterView(View):
             user_profile.password = make_password(pass_word)
             user_profile.save()
             # 用户保存到数据库后，发送激活链接
-            send_email(user_name, "register")
+            send_email(user_name, "register", 16)
             return render(request, "login.html")
         else:
             return render(request, "register.html", {"register_form": register_form})
@@ -118,7 +118,7 @@ class ForgetPwdView(View):
         # 判断邮箱和验证码是否填写正确,正确则跳转到成功页面，否则继续跳转到该页面（注意也要带上forget_form）
         if forget_form.is_valid():
             email = request.POST.get("email", "")
-            send_email(email, "forget")
+            send_email(email, "forget", 16)
             return render(request, "send_success.html")
         else:
             return render(request, "forgetpwd.html", {"forget_form": forget_form})
@@ -170,12 +170,20 @@ class ModifyPwdView(View):
 
 class UserInfoView(LoginRequiredMixin, View):
     """
-    用户个人信息
+    用户个人信息显示和修改
     """
     def get(self, request):
         return render(request, "usercenter-info.html", {
 
         })
+
+    def post(self, request):
+        user_info_form = UserInfoForm(request.POST, instance=request.user)
+        if user_info_form.is_valid():
+            user_info_form.save()
+            return HttpResponse('{"status": "success"}', content_type="application/json")
+        else:
+            return HttpResponse(json.dumps(user_info_form.errors), content_type="application/json")
 
 
 class ModifyUserImageView(View):
@@ -209,3 +217,32 @@ class UpdatePwdView(LoginRequiredMixin, View):
             return HttpResponse('{"status": "success"}', content_type="application/json")
         else:
             return HttpResponse(json.dumps(modify_form.errors), content_type="application/json")
+
+
+class SendVerifyCodeView(LoginRequiredMixin, View):
+    """
+    修改邮箱的验证码
+    """
+    def get(self, request):
+        email = request.GET.get("email", "")
+        if UserProfile.objects.filter(email=email):
+            return HttpResponse('{"msg": "邮箱已经存在"}', content_type="application/json")
+        send_email(email, "update_email", 6)
+        return HttpResponse('{"status": "success"}', content_type="application/json")
+
+
+class UpdateEmailView(LoginRequiredMixin, View):
+    """
+    修改邮箱
+    """
+    def post(self, request):
+        email = request.POST.get("email", "")
+        code = request.POST.get("code", "")
+        exit_record = EmailVerifyCode.objects.filter(email=email, code=code, send_type="update_email")
+        if exit_record:
+            user = request.user
+            user.email = email
+            user.save()
+            return HttpResponse('{"status": "success"}', content_type="application/json")
+        else:
+            return HttpResponse('{"msg": "验证码错误"}', content_type="application/json")
