@@ -74,9 +74,9 @@
 	<div class="wp list personal_list">
 	<div class="left">
         <ul>
-            <li class="active2"><a href="usercenter-info.html">个人资料</a></li>
-            <li ><a href="usercenter-mycourse.html">我的课程</a></li>
-            <li ><a href="usercenter-fav-course.html">我的收藏</a></li>
+            <li class="active2"><a href="{% url 'user:user_info' %}">个人资料</a></li>
+            <li ><a href="{% url 'user:user_my_course' %}">我的课程</a></li>
+            <li ><a href="{% url 'user:user_my_fav_org' %}">我的收藏</a></li>
             <li >
                 <a href="usercenter-message.html" style="position: relative;">
                     我的消息
@@ -248,11 +248,12 @@
 <script src="{% static 'js/validate.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/deco-user.js' %}"></script>
 {% block custom_js %}{% endblock %}
+
+<!--取消收藏JS代码 采用ajax方式-->
 <script type="text/javascript">
     $('.jsDeleteFav_course').on('click', function(){
         var _this = $(this),
             favid = _this.attr('data-favid');
-        alert(favid)
         $.ajax({
                 cache: false,
                 type: "POST",
@@ -260,7 +261,7 @@
                 data: {
                     fav_type: 1,
                     fav_id: favid,
-                    csrfmiddlewaretoken: '799Y6iPeEDNSGvrTu3noBrO4MBLv6enY'
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
                 },
                 async: true,
                 success: function(data) {
@@ -279,7 +280,7 @@
                     data: {
                         fav_type: 3,
                         fav_id: favid,
-                        csrfmiddlewaretoken: '799Y6iPeEDNSGvrTu3noBrO4MBLv6enY'
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
                     },
                     async: true,
                     success: function(data) {
@@ -299,7 +300,7 @@
                     data: {
                         fav_type: 2,
                         fav_id: favid,
-                        csrfmiddlewaretoken: '799Y6iPeEDNSGvrTu3noBrO4MBLv6enY'
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
                     },
                     async: true,
                     success: function(data) {
