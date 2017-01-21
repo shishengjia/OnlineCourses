@@ -7,9 +7,11 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.views.generic.base import View
+
+from pure_pagination import Paginator, PageNotAnInteger
+
 from .models import UserProfile, EmailVerifyCode
-from operation.models import UserFavorite
-from operation.models import UserCourse
+from operation.models import UserFavorite, UserCourse, UserMessage
 from organisation.models import CourseOrg, Teacher
 from courses.models import Course
 from .forms import LoginForm, RegisterForm, ForgetForm, ModifyPwdForm, ModifyUserImageForm, UserInfoForm
@@ -177,8 +179,9 @@ class UserInfoView(LoginRequiredMixin, View):
     用户个人信息显示和修改
     """
     def get(self, request):
+        current_page = "info"
         return render(request, "usercenter-info.html", {
-
+            "current_page": current_page
         })
 
     def post(self, request):
@@ -257,17 +260,20 @@ class UserCourseView(LoginRequiredMixin, View):
     用户正在学的课程
     """
     def get(self, request):
+        current_page = "course"
         user_courses = UserCourse.objects.filter(user=request.user)
         return render(request, "usercenter-mycourse.html", {
-            "user_courses": user_courses
+            "user_courses": user_courses,
+            "current_page": current_page
         })
 
 
-class UserFavOrgView(View):
+class UserFavOrgView(LoginRequiredMixin, View):
     """
     用户收藏的机构
     """
     def get(self, request):
+        current_page = "fav"
         orgs_list = []
         fav_orgs = UserFavorite.objects.filter(user=request.user, fav_type=2)
         # 从机构收藏对象取出机构ID，根据ID找到机构对象，存入集合
@@ -277,15 +283,17 @@ class UserFavOrgView(View):
             orgs_list.append(org)
 
         return render(request, "usercenter-fav-org.html", {
-            "orgs_list": orgs_list
+            "orgs_list": orgs_list,
+            "current_page": current_page
         })
 
 
-class UserFavCourseView(View):
+class UserFavCourseView(LoginRequiredMixin, View):
     """
     用户收藏的课程
     """
     def get(self, request):
+        current_page = "fav"
         courses_list = []
         fav_courses = UserFavorite.objects.filter(user=request.user, fav_type=1)
         # 从课程收藏对象取出课程ID，根据ID找到课程对象，存入集合
@@ -295,15 +303,17 @@ class UserFavCourseView(View):
             courses_list.append(course)
 
         return render(request, "usercenter-fav-course.html", {
-            "courses_list": courses_list
+            "courses_list": courses_list,
+            "current_page": current_page
         })
 
 
-class UserFavTeacherView(View):
+class UserFavTeacherView(LoginRequiredMixin, View):
     """
     用户收藏的讲师
     """
     def get(self, request):
+        current_page = "fav"
         teachers_list = []
         # 教师收藏对象
         fav_teachers = UserFavorite.objects.filter(user=request.user, fav_type=3,)
@@ -314,5 +324,29 @@ class UserFavTeacherView(View):
             teachers_list.append(teacher)
 
         return render(request, "usercenter-fav-teacher.html", {
-            "teachers_list": teachers_list
+            "teachers_list": teachers_list,
+            "current_page": current_page
+        })
+
+
+class UserSystemMessageView(LoginRequiredMixin, View):
+    """
+    用户收到的系统消息列表
+    """
+    def get(self, request):
+        # todo 记得将消息的详情页做一下
+
+        current_page = "sys_message"
+        all_sys_messages = UserMessage.objects.filter(user=request.user.id).order_by("-add_time")
+
+        #  分页
+        try:
+            page = request.GET.get('page', 1)
+        except PageNotAnInteger:
+            page = 1
+        p = Paginator(all_sys_messages, per_page=4, request=request)
+        sys_messages = p.page(page)
+        return render(request, "usercenter-message.html", {
+            "sys_messages": sys_messages,
+            "current_page": current_page
         })

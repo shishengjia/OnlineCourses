@@ -2,7 +2,7 @@
 from django.conf.urls import url
 
 from .views import UserInfoView, ModifyUserImageView, UpdatePwdView, SendVerifyCodeView, UpdateEmailView, \
-    UserCourseView, UserFavCourseView, UserFavTeacherView, UserFavOrgView
+    UserCourseView, UserFavCourseView, UserFavTeacherView, UserFavOrgView, UserSystemMessageView
 _author_ = 'shishengjia'
 _date_ = '19/01/2017 20:38'
 
@@ -27,4 +27,6 @@ urlpatterns = [
     url(r'^myfav/teacher/$', UserFavTeacherView.as_view(), name="user_my_fav_teacher"),
     # 我收藏的课程
     url(r'^myfav/course/$', UserFavCourseView.as_view(), name="user_my_fav_course"),
+    # 用户收到的系统信息
+    url(r'^message/$', UserSystemMessageView.as_view(), name="user_system_message"),
 ]

@@ -22,6 +22,11 @@ class UserProfile(AbstractUser):
     def __unicode__(self):
         return self.username
 
+    def get_unread_sys_message(self):
+        # 获取未读系统信息
+        from operation.models import UserMessage
+        return UserMessage.objects.filter(user=self.id).count()
+
 
 class EmailVerifyCode(models.Model):
     code = models.CharField(max_length=20, verbose_name=u"验证码")
