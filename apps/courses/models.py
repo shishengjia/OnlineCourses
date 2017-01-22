@@ -20,7 +20,7 @@ class CourseType(models.Model):
 
 
 class Course(models.Model):
-    org = models.ForeignKey(CourseOrg, verbose_name=u"课程所属机构", null=True, blank=True)
+    org = models.ForeignKey(CourseOrg, verbose_name=u"课程所属机构", null=True, blank=True, default="1")
     teacher = models.ForeignKey(Teacher, verbose_name=u"课程讲师",  null=True, blank=True)
     type = models.ForeignKey(CourseType, verbose_name=u"课程类别", null=True, blank=True)
     name = models.CharField(max_length=50, verbose_name=u"课程名")

@@ -18,7 +18,8 @@ from django.conf.urls import url, include
 from django.views.generic import TemplateView
 from django.views.static import serve
 
-from users.views import LoginView, RegisterView, ActiveUserView, ForgetPwdView, ResetView, ModifyPwdView, LogoutView
+from users.views import LoginView, RegisterView, ActiveUserView, ForgetPwdView, ResetView, ModifyPwdView, LogoutView, \
+    IndexView
 from OnlineCourses.settings import MEDIA_ROOT
 import xadmin
 
@@ -26,7 +27,7 @@ import xadmin
 urlpatterns = [
     # 处理网页请求
     url(r'^xadmin/', xadmin.site.urls),
-    url(r'^$', TemplateView.as_view(template_name="index.html"), name="index"),
+    url(r'^$', IndexView.as_view(), name="index"),
     url(r'^logout/$', LogoutView.as_view(), name="logout"),
     url(r'^login/$', LoginView.as_view(), name="login"),
     url(r'^register/$', RegisterView.as_view(), name="register"),

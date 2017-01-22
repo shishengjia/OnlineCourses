@@ -20,6 +20,19 @@ from utils.email_send import send_email
 from utils.LoginJudge import LoginRequiredMixin
 
 
+class IndexView(View):
+    """
+    首页
+    """
+    def get(self, request):
+
+        courses = Course.objects.all()[:8]
+        orgs = CourseOrg.objects.all()[:12]
+        return render(request, "index.html", {
+            "courses": courses,
+            "orgs": orgs
+        })
+
 
 class CustomBackend(ModelBackend):
     """
