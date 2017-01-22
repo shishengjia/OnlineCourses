@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 from django.shortcuts import render
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.hashers import make_password
 from django.http import HttpResponseRedirect, HttpResponse
@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.views.generic.base import View
 
 from pure_pagination import Paginator, PageNotAnInteger
+import json
 
 from .models import UserProfile, EmailVerifyCode
 from operation.models import UserFavorite, UserCourse, UserMessage
@@ -17,7 +18,7 @@ from courses.models import Course
 from .forms import LoginForm, RegisterForm, ForgetForm, ModifyPwdForm, ModifyUserImageForm, UserInfoForm
 from utils.email_send import send_email
 from utils.LoginJudge import LoginRequiredMixin
-import json
+
 
 
 class CustomBackend(ModelBackend):
@@ -108,6 +109,15 @@ class LoginView(View):
                 return render(request, "login.html", {"msg": "用户名或密码错误！"})
         else:
             return render(request, "login.html", {"login_form": login_form})
+
+
+class LogoutView(View):
+    """
+    用户退出登陆
+    """
+    def get(self, request):
+        logout(request)
+        return HttpResponseRedirect(reverse("index"))
 
 
 class ForgetPwdView(View):

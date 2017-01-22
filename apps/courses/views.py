@@ -18,7 +18,7 @@ class CourseListView(View):
     """
     def get(self, request):
         all_course = Course.objects.all()
-        hot_course = all_course.order_by("-click_nums")[:3]  # 根据点击量筛选出所有机构中热度排名前三的机构
+        hot_course = all_course.order_by("-fav_nums")[:3]  # 根据收藏数筛选出所有机构中热度排名前三的机构
         all_type = CourseType.objects.all()
 
         # 全局搜索
@@ -119,6 +119,7 @@ class CourseInfoView(LoginRequiredMixin, View):
     def get(self, request, course_id):
 
         course = Course.objects.get(id=int(course_id))
+        # 用户点击开始学习，则学习人数+1
         course.student_nums += 1
         course.save()
         # 判断该登陆用户是否已经学过这门课，没学过的就添加到记录中
