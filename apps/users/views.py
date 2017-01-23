@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.views.generic.base import View
+from django.shortcuts import render_to_response
 
 from pure_pagination import Paginator, PageNotAnInteger
 import json
@@ -25,9 +26,8 @@ class IndexView(View):
     首页
     """
     def get(self, request):
-
         courses = Course.objects.all()[:8]
-        orgs = CourseOrg.objects.all()[:12]
+        orgs = CourseOrg.objects.all()[:15]
         return render(request, "index.html", {
             "courses": courses,
             "orgs": orgs
@@ -115,6 +115,7 @@ class LoginView(View):
             if user is not None:  # 用户名或密码是否正确
                 if user.is_active:  # 用户是否处于激活状态
                     login(request, user)
+                    # 注意这里需要重定向，因为直接跳转无法携带首页所需要的数据
                     return HttpResponseRedirect(reverse("index"))
                 else:
                     return render(request, "login.html", {"msg": "用户未激活！"})
@@ -373,3 +374,22 @@ class UserSystemMessageView(LoginRequiredMixin, View):
             "sys_messages": sys_messages,
             "current_page": current_page
         })
+
+
+def page_not_found(request):
+    """
+    404页面
+    """
+    response = render_to_response("404.html", {})
+    response.status_code = 404
+    return response
+
+
+def page_error(request):
+    """
+    500页面
+    """
+    response = render_to_response("500.html", {})
+    response.status_code = 500
+    return response
+

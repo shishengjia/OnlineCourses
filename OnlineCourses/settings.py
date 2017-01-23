@@ -26,9 +26,9 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'extra_apps'))
 SECRET_KEY = 'mfa+9(*ya5i%qq*bdgf)db!6s5f9pt$e5d*ok1t_niwmo!n+x_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False  # 在部署到服务器上时，必须设置为False，防止跳出错误页面，暴露网站相关信息
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 AUTHENTICATION_BACKENDS = (
@@ -149,3 +149,4 @@ EMAIL_FROM = "13419516267@sina.cn"
 # 设置资源存储的根路径
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
