@@ -33,7 +33,7 @@ class CourseOrg(models.Model):
     click_num = models.IntegerField(default=0, verbose_name=u"点击数")
     fav_num = models.IntegerField(default=0, verbose_name=u"收藏数")
     student_nums = models.IntegerField(default=0, verbose_name=u"学习人数")
-    course_nums = models.IntegerField(default=0, verbose_name=u"课程数")
+    course_nums = models.IntegerField(verbose_name=u"课程数")
     image = models.ImageField(upload_to="org/%Y/%m", verbose_name=u"logo")
     address = models.CharField(max_length=150, verbose_name=u"机构地址")
     add_time = models.DateTimeField(default=datetime.now)
@@ -44,6 +44,10 @@ class CourseOrg(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def get_course_nums(self):
+        return self.course_set.all().count()
+    get_course_nums.short_description = "课程数"
 
 
 class Teacher(models.Model):

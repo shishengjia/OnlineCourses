@@ -5,7 +5,7 @@
 {% load staticfiles %} <!--模板里已经加载过，但是这里还是要加载一遍-->
 {% block title %}课程详情-源学网 {% endblock %}
 
-{% block custom_bread %}
+{% block custom_bread  %}
 <section>
         <div class="wp">
             <ul  class="crumbs">
@@ -99,10 +99,10 @@
 					</ul>
 				</div>
 				<div class="tab_cont tab_cont1">
-                    
-					<p>{{ course.details }}</p>
-                    
+                    <!--Django的安全机制，默认开启自动转义，防止js代码攻击，所以这里关闭自动转义，否则富文本内容无法正常显示-->
+					<p>{% autoescape off %}{{ course.details }}{% endautoescape %}</p>
 				</div>
+
 				<div class="tab_cont tab_cont2" >
 					<div class="comment">
 						<div class="comenlist">
@@ -134,6 +134,10 @@
 {% endblock %}
 
 {% block custom_js2 %}
+    <script type="text/javascript" charset="utf-8" src="/extra_apps/DjangoUeditor/static/ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/extra_apps/DjangoUeditor/static/ueditor/ueditor.all.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/extra_apps/DjangoUeditor/static/ueditor/lang/zh-cn/zh-cn.js"></script>
+
 <script type="text/javascript">
 //收藏分享
 function add_fav(current_elem, fav_id, fav_type){

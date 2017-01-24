@@ -1,8 +1,9 @@
 # -*- encoding: utf-8 -*-
 from __future__ import unicode_literals
 from datetime import datetime
-
 from django.db import models
+
+from DjangoUeditor.models import UEditorField
 
 from organisation.models import CourseOrg, Teacher
 
@@ -26,7 +27,8 @@ class Course(models.Model):
     name = models.CharField(max_length=50, verbose_name=u"课程名")
     desc = models.CharField(max_length=300, verbose_name=u"课程描述")
     # TextField不限定长度
-    details = models.TextField(verbose_name=u"课程详情")
+    details = UEditorField(verbose_name=u"课程详情", width=600, height=300, imagePath="course/detail_image/",
+                           filePath="course/detail_image/", default="")
     level = models.CharField(choices=(("primary", u"初级"), ("middle", u"中级"), ("advanced", u"高级")), max_length=10,
                              verbose_name=u"难度")
     learning_time = models.IntegerField(default=0, verbose_name=u"学习时长（分钟）")
@@ -50,6 +52,10 @@ class Course(models.Model):
 
     def get_course_resources(self):
         return self.courseresource_set.all()
+
+    def get_lesson_num(self):
+        return self.lesson_set.all().count()
+    get_lesson_num.short_description = "章节数"
 
 
 class Lesson(models.Model):

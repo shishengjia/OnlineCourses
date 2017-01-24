@@ -19,7 +19,7 @@ from django.views.static import serve
 
 from users.views import LoginView, RegisterView, ActiveUserView, ForgetPwdView, ResetView, ModifyPwdView, LogoutView, \
     IndexView
-from OnlineCourses.settings import MEDIA_ROOT, STATIC_ROOT
+from OnlineCourses.settings import MEDIA_ROOT
 import xadmin
 
 
@@ -46,7 +46,10 @@ urlpatterns = [
     #  配置上传文件的访问处理函数
     url(r'^media/(?P<path>.*)$', serve, {"document_root": MEDIA_ROOT}),
 
-    url(r'^static/(?P<path>.*)$', serve, {"document_root": STATIC_ROOT}),
+    # url(r'^static/(?P<path>.*)$', serve, {"document_root": STATIC_ROOT}),
+
+    # ueditor相关url
+    url(r'^ueditor/', include('DjangoUeditor.urls' )),
 ]
 
 # 全局404配置

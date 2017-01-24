@@ -15,9 +15,11 @@ class CityDictAdmin(object):
 
 
 class CourseOrgAdmin(object):
-    list_display = ['name', 'desc', 'category', 'click_num', 'fav_num', 'image', 'address', 'add_time', 'city']
+    list_display = ['name', 'get_course_nums', 'desc', 'category', 'click_num', 'fav_num', 'image', 'address', 'add_time', 'city']
     search_fields = ['name', 'desc', 'category',  'click_num', 'fav_num', 'image', 'address', 'city']
     list_filter = ['name', 'desc', 'category', 'click_num', 'fav_num', 'image', 'address', 'add_time', 'city__name']
+    # 其他表以机构为外键时，选择的时候不会加载出所有机构，而是出现搜索框让用户自己进行搜索
+    relfield_style = 'fk-ajax'
 
 
 class TeacherAdmin(object):

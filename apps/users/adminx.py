@@ -2,7 +2,10 @@
 
 import xadmin
 from xadmin import views
-from .models import EmailVerifyCode, Banner
+from xadmin.plugins.auth import UserAdmin
+from django.contrib.auth.models import User
+
+from .models import EmailVerifyCode, Banner, UserProfile
 
 _author_ = 'shishengjia'
 _date_ = '04/01/2017 20:21'
@@ -17,6 +20,11 @@ class GlobalSetting(object):
     site_title = "源学网后台管理系统"
     site_footer = "源学网"
     menu_style = "accordion"
+
+
+class UserProfileAdmin(UserAdmin):
+    pass
+
 
 class EmailVerifyCodeAdmin(object):
     # 配置xadmin后台管理验证码部分的显示格式
@@ -35,6 +43,6 @@ class BannerAdmin(object):
 # 将model注册到xadmin的后台
 xadmin.site.register(EmailVerifyCode, EmailVerifyCodeAdmin)
 xadmin.site.register(Banner, BannerAdmin)
-
+# xadmin.site.register(UserProfile, UserProfileAdmin)
 xadmin.site.register(views.BaseAdminView, BaseSetting)
 xadmin.site.register(views.CommAdminView, GlobalSetting)
