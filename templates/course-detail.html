@@ -152,7 +152,7 @@ function add_fav(current_elem, fav_id, fav_type){
         },
         success: function(data) {
             if(data.status == 'fail'){
-                if(data.msg == '用户未登录'){
+                if(data.msg == '用户未登陆'){
                     window.location.href="{% url 'login' %}";
                 }else{
                     current_elem.text(data.msg)

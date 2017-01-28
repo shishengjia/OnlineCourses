@@ -10,6 +10,7 @@ from .models import CourseOrg, CityDict, Teacher
 from courses.models import Course
 from .forms import UserAskForm
 from operation.models import UserFavorite
+from utils.LoginJudge import LoginRequiredMixin
 
 
 class OrgView(View):
